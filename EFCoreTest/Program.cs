@@ -1,6 +1,7 @@
 ﻿using System;
 using EFCoreTest.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreTest
 {
@@ -87,6 +88,54 @@ namespace EFCoreTest
 
             var connector = context.Connectors.First();
             Console.WriteLine($"Connector {connector.Sku} Price: {connector.Lookup.Price} Weight: {connector.Lookup.Weight}");
+
+            // let's add some data that does not correspond to values in the lookup table.
+            context.Plugs.Add(new Plug
+            {
+                Sku = "100",
+                Name = "Test plug 100",
+                PlugId = 100
+            });
+            context.SaveChanges();
+
+            context.Connectors.Add(new Connector
+            {
+                Sku = "101",
+                Name = "Test connector 101",
+                ConnectorId = 101
+            });
+            context.SaveChanges();
+
+            context.Cords.Add(new Cord
+            {
+                Sku = "102",
+                Name = "Test cord 102",
+                CordId = 102
+            });
+            context.SaveChanges();
+
+            // add a lookup value that does not correspond to a plug, connector or cord.
+            context.Lookups.Add(new Lookup
+            {
+                Sku = "202",
+                Weight = 1.25m,
+                Price = 50.00m
+            });
+            context.SaveChanges();
+
+            // tests using objects without a related lookup object.
+            var plugs = context.Plugs.Include(x => x.Lookup).Where(x => x.Lookup == null);
+            Console.WriteLine($"Plugs without lookup: {plugs.Count()}");
+
+            var connectors = context.Connectors.Include(x => x.Lookup).Where(x => x.Lookup == null);
+            Console.WriteLine($"Connectors without lookup: {connectors.Count()}");
+
+            var cords = context.Cords.Include(x => x.Lookup).Where(x => x.Lookup == null);
+            Console.WriteLine($"\nCords without lookup: {cords.Count()}");
+
+            // test lookup record without a related plug, connector or cord object
+            var lookups = context.Lookups.Where(x => x.Plugs == null && x.Connectors == null && x.Cords == null).ToList();
+            Console.WriteLine($"Lookup without any related plug/connector/cord objects: {lookups.Count()} ");
 
 
             Console.WriteLine("\nPress any key to exit.");
