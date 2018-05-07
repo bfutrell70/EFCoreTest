@@ -9,7 +9,7 @@ namespace EFCoreTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Starting EF Core Test!");
+            Console.WriteLine("Starting EF Core Test!\n");
 
             var context = new DataContext();
 
@@ -129,20 +129,43 @@ namespace EFCoreTest
             var orphanplugs = plugs.Where(x => x.Lookup == null).ToList();
             var pairedplugs = plugs.Where(x => x.Lookup != null).ToList();
             Console.WriteLine($"\nPlugs without lookup: {orphanplugs.Count()}");
+            foreach (var item in orphanplugs)
+            {
+                Console.WriteLine($"\tPlug Sku {item.Sku}");
+            }
             Console.WriteLine($"Plugs with lookup: {pairedplugs.Count()}");
+            foreach (var item in pairedplugs)
+            {
+                Console.WriteLine($"\tPlug Sku {item.Sku}");
+            }
 
             var connectors = context.Connectors.Include(x => x.Lookup).ToList();
             var orphanconnectors = connectors.Where(x => x.Lookup == null).ToList();
             var pairedconnectors = connectors.Where(x => x.Lookup != null).ToList();
             Console.WriteLine($"Connectors without lookup: {orphanconnectors.Count()}");
+            foreach (var item in orphanconnectors)
+            {
+                Console.WriteLine($"\tConnector Sku {item.Sku}");
+            }
             Console.WriteLine($"Connectors with lookup: {pairedconnectors.Count()}");
+            foreach (var item in pairedconnectors)
+            {
+                Console.WriteLine($"\tConnector Sku {item.Sku}");
+            }
 
             var cords = context.Cords.Include(x => x.Lookup).ToList();
             var orphancords = cords.Where(x => x.Lookup == null).ToList();
             var pairedcords = cords.Where(x => x.Lookup != null).ToList();
             Console.WriteLine($"Cords without lookup: {orphancords.Count()}");
+            foreach (var item in orphancords)
+            {
+                Console.WriteLine($"\tCord Sku {item.Sku}");
+            }
             Console.WriteLine($"Cords with lookup: {pairedcords.Count()}");
-
+            foreach (var item in pairedcords)
+            {
+                Console.WriteLine($"\tCord Sku {item.Sku}");
+            }
 
             // test lookup record without a related plug, connector or cord object
             var lookups = context.Lookups
@@ -155,6 +178,7 @@ namespace EFCoreTest
 
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
+                       
         }
     }
 }
