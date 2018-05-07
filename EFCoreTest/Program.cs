@@ -198,6 +198,7 @@ namespace EFCoreTest
 
             var context = new DataContext2();
 
+            // local function - only visible in SecondTry
             // from https://stackoverflow.com/questions/7630555/how-to-pass-list-of-class-to-list-of-interface
             void PrintSkus<T>(IEnumerable<IComponent> components) where T : IComponent
             {
@@ -362,6 +363,7 @@ namespace EFCoreTest
 
             var context = new DataContext3();
 
+            // local function - only visible in ThirdTry
             void PrintSkus(IEnumerable<BaseComponent> components)
             {
                 foreach (var item in components)
