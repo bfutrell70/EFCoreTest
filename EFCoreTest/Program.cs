@@ -199,7 +199,8 @@ namespace EFCoreTest
             var context = new DataContext2();
 
             // local function - only visible in SecondTry
-            // from https://stackoverflow.com/questions/7630555/how-to-pass-list-of-class-to-list-of-interface
+            // interface stuff (<T>, where T: IComponent) from https://stackoverflow.com/questions/7630555/how-to-pass-list-of-class-to-list-of-interface
+            // interface stuff used heavily in HubSpot.NET
             void PrintSkus<T>(IEnumerable<IComponent> components) where T : IComponent
             {
                 foreach (var item in components)
