@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace EFCoreTest.Models
+namespace EFCoreTest.Models.FirstTry
 {
-    public class Plug
+    public class Cord
     {
         [Key]
-        public int PlugId { get; set; }
+        public int CordId { get; set; }
 
         public string Name { get; set; }
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EFCoreTest.Models
+namespace EFCoreTest.Models.FirstTry
 {
     public class DataContext : DbContext
     {

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace EFCoreTest.Models
+namespace EFCoreTest.Models.FirstTry
 {
-    public class Cord
+    public class Connector
     {
         [Key]
-        public int CordId { get; set; }
+        public int ConnectorId { get; set; }
 
         public string Name { get; set; }
 
@@ -18,5 +17,6 @@ namespace EFCoreTest.Models
 
         // navigation property
         public Lookup Lookup { get; set; }
+
     }
 }

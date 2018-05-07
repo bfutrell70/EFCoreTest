@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace EFCoreTest.Models
+namespace EFCoreTest.Models.SecondTry
 {
-    public class Lookup
+    public class Lookup2
     {
         [Key]
         public string Sku { get; set; }
@@ -15,14 +15,13 @@ namespace EFCoreTest.Models
         public decimal Price { get; set; }
 
         // each sku can reference zero or more plugs
-        public ICollection<Plug> Plugs { get; set; }
+        public ICollection<ImplementedPlug> Plugs { get; set; }
 
         // each sku can reference zero or more connectors
-        public ICollection<Connector> Connectors { get; set; }
+        public ICollection<ImplementedConnector> Connectors { get; set; }
 
         // each sku can reference zero or one cord.
         // When I tried this using EF 6 it errored until I changed it to a collection
-        public ICollection<Cord> Cords { get; set; }
-
+        public ICollection<ImplementedCord> Cords { get; set; }
     }
 }

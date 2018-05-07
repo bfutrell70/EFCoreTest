@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace EFCoreTest.Models
+namespace EFCoreTest.Models.FirstTry
 {
-    public class Connector
+    public class Plug
     {
         [Key]
-        public int ConnectorId { get; set; }
+        public int PlugId { get; set; }
 
         public string Name { get; set; }
 
@@ -17,6 +17,5 @@ namespace EFCoreTest.Models
 
         // navigation property
         public Lookup Lookup { get; set; }
-
     }
 }
