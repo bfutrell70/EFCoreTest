@@ -653,16 +653,18 @@ namespace EFCoreTest
             // tests using objects without a related lookup object.
             // having to convert to list after the include because it was returning no records.
 
-            var plugs = context.Plugs.Include(x => x.Lookup).Where(x => x.Lookup.Price == null);
-            Console.WriteLine($"\nPlugs without lookup: {plugs.Count()}");
+            //// It appears if you try to check the navigation object at the same time as including the navigation data
+            //// it can't check the navigation object's values.
+            //var plugs = context.Plugs.Include(x => x.Lookup).Where(x => string.IsNullOrEmpty(x.Lookup.Sku));
+            //Console.WriteLine($"\nPlugs without lookup: {plugs.Count()}");
 
-            //var plugs = context.Plugs.Include(x => x.Lookup).ToList();
-            //var orphanplugs = plugs.Where(x => x.Lookup == null).ToList();
-            //var pairedplugs = plugs.Where(x => x.Lookup != null).ToList();
-            //Console.WriteLine($"\nPlugs without lookup: {orphanplugs.Count()}");
-            //PrintSkus(orphanplugs);
-            //Console.WriteLine($"\nPlugs with lookup: {pairedplugs.Count()}");
-            //PrintSkus(pairedplugs);
+            var plugs = context.Plugs.Include(x => x.Lookup).ToList();
+            var orphanplugs = plugs.Where(x => x.Lookup == null).ToList();
+            var pairedplugs = plugs.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"\nPlugs without lookup: {orphanplugs.Count()}");
+            PrintSkus(orphanplugs);
+            Console.WriteLine($"\nPlugs with lookup: {pairedplugs.Count()}");
+            PrintSkus(pairedplugs);
 
             //var connectors = context.Connectors.Include(x => x.Lookup).ToList();
             //var orphanconnectors = connectors.Where(x => x.Lookup == null).ToList();
