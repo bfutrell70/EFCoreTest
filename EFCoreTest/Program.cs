@@ -124,17 +124,23 @@ namespace EFCoreTest
             context.SaveChanges();
 
             // tests using objects without a related lookup object.
-            var plugs = context.Plugs.Include(x => x.Lookup).Where(x => x.Lookup == null);
-            Console.WriteLine($"Plugs without lookup: {plugs.Count()}");
+            // having to convert to list after the include because it was returning no records.
+            var plugs = context.Plugs.Include(x => x.Lookup).ToList();
+            plugs = plugs.Where(x => x.Lookup == null).ToList();
+            Console.WriteLine($"\nPlugs without lookup: {plugs.Count()}");
 
-            var connectors = context.Connectors.Include(x => x.Lookup).Where(x => x.Lookup == null);
+            var connectors = context.Connectors.Include(x => x.Lookup).ToList();
+            connectors = connectors.Where(x => x.Lookup == null).ToList();
             Console.WriteLine($"Connectors without lookup: {connectors.Count()}");
 
-            var cords = context.Cords.Include(x => x.Lookup).Where(x => x.Lookup == null);
-            Console.WriteLine($"\nCords without lookup: {cords.Count()}");
+            var cords = context.Cords.Include(x => x.Lookup).ToList();
+            cords = cords.Where(x => x.Lookup == null).ToList();
+            Console.WriteLine($"Cords without lookup: {cords.Count()}");
 
             // test lookup record without a related plug, connector or cord object
-            var lookups = context.Lookups.Where(x => x.Plugs == null && x.Connectors == null && x.Cords == null).ToList();
+            var lookups = context.Lookups
+                .Include(x => x.Plugs).Include(x => x.Connectors).Include(x => x.Cords).ToList();
+            lookups = lookups.Where(x => x.Plugs.Count() == 0 && x.Connectors.Count() == 0 && x.Cords.Count() == 0).ToList();
             Console.WriteLine($"Lookup without any related plug/connector/cord objects: {lookups.Count()} ");
 
 
