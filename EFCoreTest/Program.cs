@@ -126,22 +126,31 @@ namespace EFCoreTest
             // tests using objects without a related lookup object.
             // having to convert to list after the include because it was returning no records.
             var plugs = context.Plugs.Include(x => x.Lookup).ToList();
-            plugs = plugs.Where(x => x.Lookup == null).ToList();
-            Console.WriteLine($"\nPlugs without lookup: {plugs.Count()}");
+            var orphanplugs = plugs.Where(x => x.Lookup == null).ToList();
+            var pairedplugs = plugs.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"\nPlugs without lookup: {orphanplugs.Count()}");
+            Console.WriteLine($"Plugs with lookup: {pairedplugs.Count()}");
 
             var connectors = context.Connectors.Include(x => x.Lookup).ToList();
-            connectors = connectors.Where(x => x.Lookup == null).ToList();
-            Console.WriteLine($"Connectors without lookup: {connectors.Count()}");
+            var orphanconnectors = connectors.Where(x => x.Lookup == null).ToList();
+            var pairedconnectors = connectors.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"Connectors without lookup: {orphanconnectors.Count()}");
+            Console.WriteLine($"Connectors with lookup: {pairedconnectors.Count()}");
 
             var cords = context.Cords.Include(x => x.Lookup).ToList();
-            cords = cords.Where(x => x.Lookup == null).ToList();
-            Console.WriteLine($"Cords without lookup: {cords.Count()}");
+            var orphancords = cords.Where(x => x.Lookup == null).ToList();
+            var pairedcords = cords.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"Cords without lookup: {orphancords.Count()}");
+            Console.WriteLine($"Cords with lookup: {pairedcords.Count()}");
+
 
             // test lookup record without a related plug, connector or cord object
             var lookups = context.Lookups
                 .Include(x => x.Plugs).Include(x => x.Connectors).Include(x => x.Cords).ToList();
-            lookups = lookups.Where(x => x.Plugs.Count() == 0 && x.Connectors.Count() == 0 && x.Cords.Count() == 0).ToList();
-            Console.WriteLine($"Lookup without any related plug/connector/cord objects: {lookups.Count()} ");
+            var orphanlookups = lookups.Where(x => x.Plugs.Count() == 0 && x.Connectors.Count() == 0 && x.Cords.Count() == 0).ToList();
+            var pairedlookups = lookups.Where(x => x.Plugs.Count() != 0 || x.Connectors.Count() != 0 || x.Cords.Count() != 0).ToList();
+            Console.WriteLine($"Lookup without any related plug/connector/cord objects: {orphanlookups.Count()} ");
+            Console.WriteLine($"Lookup with a related plug/connector/cord object: {pairedlookups.Count()} ");
 
 
             Console.WriteLine("\nPress any key to exit.");
