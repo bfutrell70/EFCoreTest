@@ -1,7 +1,7 @@
 ﻿using System;
-using EFCoreTest.Models;
 using EFCoreTest.Models.FirstTry;
 using EFCoreTest.Models.SecondTry;
+using EFCoreTest.Models.ThirdTry;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -14,6 +14,7 @@ namespace EFCoreTest
         {
             FirstTry();
             SecondTry();
+            ThirdTry();
         }
 
         public static void FirstTry()
@@ -197,6 +198,7 @@ namespace EFCoreTest
 
             var context = new DataContext2();
 
+            // from https://stackoverflow.com/questions/7630555/how-to-pass-list-of-class-to-list-of-interface
             void PrintSkus<T>(IEnumerable<IComponent> components) where T : IComponent
             {
                 foreach (var item in components)
@@ -351,8 +353,169 @@ namespace EFCoreTest
             
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
+        }
 
-            
+        public static void ThirdTry()
+        {
+            Console.Clear();
+            Console.WriteLine(" -- Starting Third EF Core Test - derived object no interface! -- \n");
+
+            var context = new DataContext3();
+
+            void PrintSkus(IEnumerable<BaseComponent> components)
+            {
+                foreach (var item in components)
+                {
+                    Console.WriteLine($"\tSku: {item.Sku} Name: {item.Name}");
+                }
+            }
+
+            // seed lookup values if none are present
+            // since I'm using an in-memory database none should be present.
+            if (context.Lookups.Count() == 0)
+            {
+                Console.WriteLine("Seeding Lookup records");
+                for (int i = 1; i <= 10; i++)
+                {
+                    context.Lookups.Add(new Lookup3
+                    {
+                        Sku = i.ToString(),
+                        Price = (decimal)i * 5,
+                        Weight = (decimal)i * 7,
+                    });
+                }
+                context.SaveChanges();
+            }
+
+            if (context.Plugs.Count() == 0)
+            {
+                Console.WriteLine("Seeding Plug records");
+                for (int i = 1; i <= 4; i++)
+                {
+                    context.Plugs.Add(new DerivedPlug
+                    {
+                        Sku = i.ToString(),
+                        Name = $"Plug {i}",
+                        DerivedPlugId = i
+                    });
+                }
+                context.SaveChanges();
+            }
+
+            if (context.Connectors.Count() == 0)
+            {
+                Console.WriteLine("Seeding Connector records");
+                for (int i = 5; i <= 7; i++)
+                {
+                    context.Connectors.Add(new DerivedConnector
+                    {
+                        Sku = i.ToString(),
+                        Name = $"Connector {i}",
+                        DerivedConnectorId = i
+                    });
+                }
+                context.SaveChanges();
+            }
+
+            if (context.Cords.Count() == 0)
+            {
+                Console.WriteLine("Seeding Cord records");
+                for (int i = 8; i <= 10; i++)
+                {
+                    context.Cords.Add(new DerivedCord
+                    {
+                        Sku = i.ToString(),
+                        Name = $"Cord {i}",
+                        DerivedCordId = i
+                    });
+                }
+                context.SaveChanges();
+            }
+
+            // Sample code to test the relationships set up in OnModelCreating
+            // This assumes that each cord, plug and connector has a corresponding lookup record, which may not always be the case.
+            //
+            // Need to allow lookup records to not have a corresponding cord, plug or connector as well as 
+            // allow a cord, plug or connector to not have a corresponding lookup record.
+            var cord = context.Cords.First();
+            Console.WriteLine($"\nCord {cord.Sku} Price: {cord.Lookup.Price} Weight: {cord.Lookup.Weight}");
+
+            var plug = context.Plugs.First();
+            Console.WriteLine($"Plug {plug.Sku} Price: {plug.Lookup.Price} Weight: {plug.Lookup.Weight}");
+
+            var connector = context.Connectors.First();
+            Console.WriteLine($"Connector {connector.Sku} Price: {connector.Lookup.Price} Weight: {connector.Lookup.Weight}");
+
+            // let's add some data that does not correspond to values in the lookup table.
+            context.Plugs.Add(new DerivedPlug
+            {
+                Sku = "100",
+                Name = "Test plug 100",
+                DerivedPlugId = 100
+            });
+            context.SaveChanges();
+
+            context.Connectors.Add(new DerivedConnector
+            {
+                Sku = "101",
+                Name = "Test connector 101",
+                DerivedConnectorId = 101
+            });
+            context.SaveChanges();
+
+            context.Cords.Add(new DerivedCord
+            {
+                Sku = "102",
+                Name = "Test cord 102",
+                DerivedCordId = 102
+            });
+            context.SaveChanges();
+
+            // add a lookup value that does not correspond to a plug, connector or cord.
+            context.Lookups.Add(new Lookup3
+            {
+                Sku = "202",
+                Weight = 1.25m,
+                Price = 50.00m
+            });
+            context.SaveChanges();
+
+            // tests using objects without a related lookup object.
+            // having to convert to list after the include because it was returning no records.
+            var plugs = context.Plugs.Include(x => x.Lookup).ToList();
+            var orphanplugs = plugs.Where(x => x.Lookup == null).ToList();
+            var pairedplugs = plugs.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"\nPlugs without lookup: {orphanplugs.Count()}");
+            PrintSkus(orphanplugs);
+            Console.WriteLine($"\nPlugs with lookup: {pairedplugs.Count()}");
+            PrintSkus(pairedplugs);
+
+            var connectors = context.Connectors.Include(x => x.Lookup).ToList();
+            var orphanconnectors = connectors.Where(x => x.Lookup == null).ToList();
+            var pairedconnectors = connectors.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"Connectors without lookup: {orphanconnectors.Count()}");
+            PrintSkus(orphanconnectors);
+            Console.WriteLine($"Connectors with lookup: {pairedconnectors.Count()}");
+            PrintSkus(pairedconnectors);
+
+            var cords = context.Cords.Include(x => x.Lookup).ToList();
+            var orphancords = cords.Where(x => x.Lookup == null).ToList();
+            var pairedcords = cords.Where(x => x.Lookup != null).ToList();
+            Console.WriteLine($"Cords without lookup: {orphancords.Count()}");
+            PrintSkus(orphancords);
+            Console.WriteLine($"Cords with lookup: {pairedcords.Count()}");
+            PrintSkus(pairedcords);
+
+            // test lookup record without a related plug, connector or cord object
+            var lookups = context.Lookups
+                .Include(x => x.Plugs).Include(x => x.Connectors).Include(x => x.Cords).ToList();
+            var orphanlookups = lookups.Where(x => x.Plugs.Count() == 0 && x.Connectors.Count() == 0 && x.Cords.Count() == 0).ToList();
+            var pairedlookups = lookups.Where(x => x.Plugs.Count() != 0 || x.Connectors.Count() != 0 || x.Cords.Count() != 0).ToList();
+            Console.WriteLine($"Lookup without any related plug/connector/cord objects: {orphanlookups.Count()} ");
+            Console.WriteLine($"Lookup with a related plug/connector/cord object: {pairedlookups.Count()} ");
+
+            Console.WriteLine("\nPress any key to exit.");
+            Console.ReadKey();
         }
     }
 }
