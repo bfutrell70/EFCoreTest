@@ -2,6 +2,7 @@
 using EFCoreTest.Models.FirstTry;
 using EFCoreTest.Models.SecondTry;
 using EFCoreTest.Models.ThirdTry;
+using EFCoreTest.Models.FourthTry;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -527,12 +528,12 @@ namespace EFCoreTest
         public static void FourthTry()
         {
             Console.Clear();
-            Console.WriteLine(" -- Starting Fourth EF Core Test - Same as Third but trying different queries for checking for navigation object! -- \n");
+            Console.WriteLine(" -- Starting Fourth EF Core Test - Derived components but trying different queries for checking for navigation object! -- \n");
 
-            var context = new DataContext3();
+            var context = new DataContext4();
 
             // local function - only visible in ThirdTry
-            void PrintSkus(IEnumerable<BaseComponent> components)
+            void PrintSkus(IEnumerable<BaseComponent4> components)
             {
                 foreach (var item in components)
                 {
@@ -547,7 +548,7 @@ namespace EFCoreTest
                 Console.WriteLine("Seeding Lookup records");
                 for (int i = 1; i <= 10; i++)
                 {
-                    context.Lookups.Add(new Lookup3
+                    context.Lookups.Add(new Lookup4
                     {
                         Sku = i.ToString(),
                         Price = (decimal)i * 5,
@@ -562,7 +563,7 @@ namespace EFCoreTest
                 Console.WriteLine("Seeding Plug records");
                 for (int i = 1; i <= 4; i++)
                 {
-                    context.Plugs.Add(new DerivedPlug
+                    context.Plugs.Add(new DerivedPlug4
                     {
                         Sku = i.ToString(),
                         Name = $"Plug {i}",
@@ -577,7 +578,7 @@ namespace EFCoreTest
                 Console.WriteLine("Seeding Connector records");
                 for (int i = 5; i <= 7; i++)
                 {
-                    context.Connectors.Add(new DerivedConnector
+                    context.Connectors.Add(new DerivedConnector4
                     {
                         Sku = i.ToString(),
                         Name = $"Connector {i}",
@@ -592,7 +593,7 @@ namespace EFCoreTest
                 Console.WriteLine("Seeding Cord records");
                 for (int i = 8; i <= 10; i++)
                 {
-                    context.Cords.Add(new DerivedCord
+                    context.Cords.Add(new DerivedCord4
                     {
                         Sku = i.ToString(),
                         Name = $"Cord {i}",
@@ -617,7 +618,7 @@ namespace EFCoreTest
             Console.WriteLine($"Connector {connector.Sku} Price: {connector.Lookup.Price} Weight: {connector.Lookup.Weight}");
 
             // let's add some data that does not correspond to values in the lookup table.
-            context.Plugs.Add(new DerivedPlug
+            context.Plugs.Add(new DerivedPlug4
             {
                 Sku = "100",
                 Name = "Test plug 100",
@@ -625,7 +626,7 @@ namespace EFCoreTest
             });
             context.SaveChanges();
 
-            context.Connectors.Add(new DerivedConnector
+            context.Connectors.Add(new DerivedConnector4
             {
                 Sku = "101",
                 Name = "Test connector 101",
@@ -633,7 +634,7 @@ namespace EFCoreTest
             });
             context.SaveChanges();
 
-            context.Cords.Add(new DerivedCord
+            context.Cords.Add(new DerivedCord4
             {
                 Sku = "102",
                 Name = "Test cord 102",
@@ -642,7 +643,7 @@ namespace EFCoreTest
             context.SaveChanges();
 
             // add a lookup value that does not correspond to a plug, connector or cord.
-            context.Lookups.Add(new Lookup3
+            context.Lookups.Add(new Lookup4
             {
                 Sku = "202",
                 Weight = 1.25m,
